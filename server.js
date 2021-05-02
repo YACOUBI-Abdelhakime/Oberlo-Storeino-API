@@ -10,13 +10,13 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
-const PORT = 8080;
+const PORT = 8085;
 
 
 connectDB();
 app.use(express.json({ extended: false }));
 app.use('/user', require('./Controller/User'));
-app.use('/produit', require('./Controller/Produit'));
+app.use('/product', require('./Controller/Product'));
 
 app.get('/',(req,res)=>{
     res.send("route <get:/>");

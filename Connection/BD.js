@@ -5,7 +5,8 @@ const url ="mongodb+srv://user1:user1@oberlo-storeino.lmaff.mongodb.net/OberloSt
 const connectDB = async () => {
   await mongoose.connect(url, {
     useUnifiedTopology: true,
-    useNewUrlParser: true
+    useNewUrlParser: true,
+    useFindAndModify: false
   });
   console.log('db connected..!');
 };

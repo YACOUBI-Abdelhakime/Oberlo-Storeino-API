@@ -1,18 +1,18 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
 const produit = new mongoose.Schema({
   _id: mongoose.ObjectId,
   title: String,
   description: String,
-  prix : Number,
+  price : Number,
   images: [String],
-  propertys: [{
+  properties: [{
     title:String,
     list: [String],
   }],
   idUser:String,
 });
-var schema = mongoose.model('Produit', produit);
+var schema = mongoose.model('Product', produit);
 module.exports = schema;
 
 module.exports.getRanHex =function () {

@@ -3,48 +3,41 @@ const mongoose = require('mongoose');
 const User = require('../Model/User');
 const route = express.Router();
 
+/**
+ * <post:/user/>
+ * <post:/user/add>
+ * <post:/user/update>
+ */
 
-route.get('/', async (req, res) => {
-    try{
-        let obj = await User.find();
-        res.json({obj});
-    }catch(e){
-        console.log("!!ERR <post:user/> "+e.name +"| Desc :"+e.message )
-        res.json({"ErrTitle":e.name,"Message":e.message,"route":"<get:user/>"});
-    }
-    
-    
-});
 route.post('/',async(req,res)=>{
-    const { email, password } = req.body;
-    let user = {};
-    user.email = email;
-    user.password = password;
+    const login = req.body;
     try{
-        let obj = await User.find(user);
-        res.json({obj});
+        const obj = await User.findOne(login);
+        res.json(obj);
     }catch(e){
-        console.log("!!ERR <post:user/> "+e.name +"| Desc :"+e.message )
         res.json({"ErrTitle":e.name,"Message":e.message,"route":"<post:user/>"});
     }
 });
 route.post('/add', async (req, res) => {
-    const { fullName, email, password } = req.body;
-    let user = {};
-    user._id = User.getRanHex(24);
-    user.fullName = fullName;
-    user.email = email;
-    user.password = password;
+    const user = req.body;
+    user._id = User.getRanHex();
     try{
-        let model = new User(user);
-        await model.save();
-        let obj = await User.find(user);
-        res.json({obj});
+        const model = new User(user);
+        const obj = await model.save();
+        res.json(obj);
     }catch(e){
-        console.log("!!ERR <post:user/> "+e.name +"| Desc :"+e.message )
         res.json({"ErrTitle":e.name,"Message":e.message,"route":"<post:user/add/>"});
     }
-  });
+});
+route.post('/update', async (req, res) => {
+    const {id,user}  = req.body;
+    try{
+        const obj = await User.findByIdAndUpdate(id,user,{"new":true});
+        res.json(obj);
+    }catch(e){
+        res.json({"ErrTitle":e.name,"Message":e.message,"route":"<post:user/updete/>"});
+    }
+});
 
 
 module.exports = route;
