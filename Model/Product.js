@@ -1,26 +1,59 @@
+const Joi = require('joi');
 const mongoose = require('mongoose');
 
 const produit = new mongoose.Schema({
   _id: mongoose.ObjectId,
-  title: String,
-  description: String,
-  price : Number,
+  title: {
+    type:String,
+    required:true
+  },
+  description: {
+    type:String,
+    required:true
+  },
+  price : {
+    type:Number,
+    required:true
+  },
   images: [String],
   properties: [{
     title:String,
     list: [String],
   }],
-  idUser:String,
+  idUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref:"User",
+    required:true
+  },
 });
 var schema = mongoose.model('Product', produit);
-module.exports = schema;
 
-module.exports.getRanHex =function () {
-  let result = [];
-  let hexRef = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
 
-  for (let n = 0; n < 24; n++) {
-    result.push(hexRef[Math.floor(Math.random() * 16)]);
-  }
-  return result.join('');
+function validateProduct(product) {
+  const schema = Joi.object({
+    title: Joi.string().required(),
+    description : Joi.string().required(),
+    price: Joi.number().required(),
+    images: Joi.array().items(Joi.string()),
+    properties: Joi.array(),
+    idUser:Joi.string(),
+
+  });
+  return schema.validate(product);
 }
+function validateUpdate(product) {
+  const schema = Joi.object({
+    title: Joi.string().required(),
+    description : Joi.string().required(),
+    price: Joi.number().required(),
+    images: Joi.array().items(Joi.string()),
+    properties: Joi.array(),
+
+  });
+  return schema.validate(product);
+}
+
+
+module.exports.Product = schema;
+module.exports.validateProduct = validateProduct;
+module.exports.validateUpdate = validateUpdate;

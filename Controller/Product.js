@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const Product = require('../Model/Product');
+const {Product,validateProduct,validateUpdate} = require('../Model/Product');
 const route = express.Router();
 
 /**
@@ -32,23 +32,24 @@ route.post('/getOne', async (req, res) => {
 });
 route.post('/add', async (req, res) => {
     const produit  = req.body;
-    produit._id = Product.getRanHex();
-    try{
-        const model = new Product(produit);
-        const obj = await model.save();
-        res.json(obj);
-    }catch(e){
-        res.json({"ErrTitle":e.name,"Message":e.message,"route":"<post:product/add/>"});
-    }
+    const {error} = validateProduct(produit);
+    if(error) return res.status(400).json({"err":error.details[0].message});
+
+    const exist = await Product.findOne({"title":produit.title});
+    if(exist) return res.status(400).json({"err":"Product already exist"});
+
+    produit._id = new mongoose.Types.ObjectId();
+    const model = new Product(produit);
+    const obj = await model.save();
+    res.json(obj);
 });
 route.post('/update', async (req, res) => {
     const {id,produit}  = req.body;
-    try{
-        const obj = await Product.findByIdAndUpdate(id,produit,{"new":true});
-        res.json(obj);
-    }catch(e){
-        res.json({"ErrTitle":e.name,"Message":e.message,"route":"<post:product/updete/>"});
-    }
+    const {error} = validateUpdate(produit);
+    if(error) return res.status(400).json({"err":error.details[0].message});
+
+    const obj = await Product.findByIdAndUpdate(id,produit,{"new":true});
+    res.json(obj);
 });
 route.post('/delete', async (req, res) => {
     const {id}  = req.body;

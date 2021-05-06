@@ -2,8 +2,10 @@ const express = require('express');
 const connectDB = require('./Connection/BD');
 const app = express();
 const mongoose = require('mongoose');
-const Test = require('./Model/test');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+
+
+
 
  
 // parse application/x-www-form-urlencoded
