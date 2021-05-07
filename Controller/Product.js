@@ -16,7 +16,7 @@ const route = express.Router();
 route.post('/',auth, async (req, res) => {
     const products = await Product.find({"idUser":req.userId});
     res.json(products);
-});
+}); 
 route.post('/getOne',auth, async (req, res) => {
     const {id} = req.body; 
     const product = await Product.findOne({"_id":id,"idUser":req.userId});

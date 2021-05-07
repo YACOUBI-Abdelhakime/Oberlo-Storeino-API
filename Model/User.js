@@ -43,7 +43,7 @@ function validateUpdate(up) {
     password : Joi.string().min(3).required(),
   });
   return schema.validate(up);
-}
+} 
  
 
 module.exports.User = schema;

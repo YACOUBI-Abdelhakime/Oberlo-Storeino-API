@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 const PORT = 8085;
 
-
+ 
 connectDB();
 app.use(express.json({ extended: false }));
 app.use('/user', require('./Controller/User'));
