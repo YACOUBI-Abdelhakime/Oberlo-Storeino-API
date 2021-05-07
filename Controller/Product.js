@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const auth = require('../midleware/auth');
 const {Product,validateProduct,validateUpdate} = require('../Model/Product');
 const route = express.Router();
 
@@ -12,62 +13,51 @@ const route = express.Router();
  * <post:/product/delete>
  * <post:/product/deleteAll>
  */
-route.post('/', async (req, res) => {
-    const {idUser} = req.body;
-    try{
-        const products = await Product.find({"idUser":idUser});
-        res.json(products);
-    }catch(e){
-        res.json({"ErrTitle":e.name,"Message":e.message,"route":"<post:product/>"});
-    }
+route.post('/',auth, async (req, res) => {
+    const products = await Product.find({"idUser":req.userId});
+    res.json(products);
 });
-route.post('/getOne', async (req, res) => {
-    const {id} = req.body;
-    try{
-        const product = await Product.findById(id);
-        res.json(product);
-    }catch(e){
-        res.json({"ErrTitle":e.name,"Message":e.message,"route":"<post:product/getOne/>"});
-    }
+route.post('/getOne',auth, async (req, res) => {
+    const {id} = req.body; 
+    const product = await Product.findOne({"_id":id,"idUser":req.userId});
+    res.json(product); 
 });
-route.post('/add', async (req, res) => {
-    const produit  = req.body;
-    const {error} = validateProduct(produit);
-    if(error) return res.status(400).json({"err":error.details[0].message});
+route.post('/add',auth, async (req, res) => {
+    const product  = req.body;
+    const {error} = validateProduct(product);
+    if(error) return res.status(400).send( error.details[0].message );
 
-    const exist = await Product.findOne({"title":produit.title});
-    if(exist) return res.status(400).json({"err":"Product already exist"});
+    const exist = await Product.findOne({"title":product.title,"idUser":req.userId});
+    if(exist) return res.status(400).send( "Product already exist" );
 
-    produit._id = new mongoose.Types.ObjectId();
-    const model = new Product(produit);
+    product._id = new mongoose.Types.ObjectId();
+    const model = new Product(product);
     const obj = await model.save();
-    res.json(obj);
+    res.json({"product":obj});
 });
-route.post('/update', async (req, res) => {
-    const {id,produit}  = req.body;
-    const {error} = validateUpdate(produit);
-    if(error) return res.status(400).json({"err":error.details[0].message});
+route.post('/update',auth, async (req, res) => {
+    const {id,product}  = req.body;
+    const {error} = validateUpdate(product);
+    if(error) return res.status(400).send( error.details[0].message );
 
-    const obj = await Product.findByIdAndUpdate(id,produit,{"new":true});
-    res.json(obj);
+    const exist = await Product.findOne({"_id":id,"idUser":req.userId});
+    if(!exist) return res.status(400).send( "product id or token invalid." );
+
+    const obj = await Product.findByIdAndUpdate(id,product,{"new":true});
+    res.json({"product":obj});
 });
-route.post('/delete', async (req, res) => {
+route.post('/delete',auth, async (req, res) => {
     const {id}  = req.body;
-    try{
-        const obj = await Product.findByIdAndDelete(id);
-        res.json(obj);
-    }catch(e){
-        res.json({"ErrTitle":e.name,"Message":e.message,"route":"<post:product/delete/>"});
-    }
+
+    const exist = await Product.findOne({"_id":id,"idUser":req.userId});
+    if(!exist) return res.status(400).send( "product id or token invalid." );
+
+    const obj = await Product.findByIdAndDelete(id);
+    res.json({"product":obj});
 });
-route.post('/deleteAll', async (req, res) => {
-    const {idUser}  = req.body;
-    try{
-        const obj = await Product.deleteMany({"idUser":idUser});
-        res.json(obj);
-    }catch(e){
-        res.json({"ErrTitle":e.name,"Message":e.message,"route":"<post:product/deleteAll/>"});
-    }
+route.post('/deleteAll',auth, async (req, res) => {
+    const obj = await Product.deleteMany({"idUser":req.userId});
+    res.json({"deletedCount":obj.deletedCount});
 });
 module.exports = route;
 
