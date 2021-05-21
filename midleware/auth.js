@@ -1,14 +1,22 @@
 const jwt = require("jsonwebtoken");
+const {User} = require('../Model/User');
 
-module.exports = function (req,res,next){
+module.exports = async function (req,res,next){
     const token = req.header("x-token");
-    if(!token) return res.status(401).send("Access denied. No token provided.");
+    if(!token) return res.json( {"res":"error","message":"Access denied. No token provided."} );
 
     try{
-        req.userId = jwt.verify(token,"jwtPrivateKey").id;
-        next();
+        let id = jwt.verify(token,"jwtPrivateKey").id;
+        let user = await User.findById(id);
+        if(user){
+            req.userId = id;
+            next();
+        }else{
+            return res.json( {"res":"error","message":"That user is deleted."} );
+        }
+        
     }catch(e){
-        return res.status(400).send("Invalid token.");
+        return res.json( {"res":"error","message":"Invalid token."} );
     }
 } 
 

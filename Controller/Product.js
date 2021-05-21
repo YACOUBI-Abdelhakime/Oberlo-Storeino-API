@@ -13,6 +13,21 @@ const route = express.Router();
  * <post:/product/delete>
  * <post:/product/deleteAll>
  */
+
+route.post('/testadd',async (req, res) => {//test
+    const {product } = req.body;
+    const {error} = validateProduct(product);
+    if(error) return res.json( {"res":"error","message":error.details[0].message} );
+
+    const exist = await Product.findOne({"title":product.title,"idUser":product.idUser});
+    if(exist) return res.json({"res":"error","message":"Product already exist" });
+
+    product._id = new mongoose.Types.ObjectId();
+    const model = new Product(product);
+    const obj = await model.save();
+    res.json({"res":"ok","product":obj});
+});
+//*********************************-TEST-***************************************
 route.post('/',auth, async (req, res) => {
     const products = await Product.find({"idUser":req.userId});
     res.json(products);
@@ -23,17 +38,17 @@ route.post('/getOne',auth, async (req, res) => {
     res.json(product); 
 });
 route.post('/add',auth, async (req, res) => {
-    const product  = req.body;
+    const {product}  = req.body;
     const {error} = validateProduct(product);
-    if(error) return res.status(400).send( error.details[0].message );
+    if(error) return res.json( {"res":"error","message":error.details[0].message+"888"} );
 
     const exist = await Product.findOne({"title":product.title,"idUser":req.userId});
-    if(exist) return res.status(400).send( "Product already exist" );
+    if(exist) return res.json({"res":"error","message":"Product already exist" });
 
     product._id = new mongoose.Types.ObjectId();
     const model = new Product(product);
     const obj = await model.save();
-    res.json({"product":obj});
+    res.json({"res":"ok","product":obj});
 });
 route.post('/update',auth, async (req, res) => {
     const {id,product}  = req.body;

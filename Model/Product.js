@@ -12,7 +12,7 @@ const produit = new mongoose.Schema({
     required:true
   },
   price : {
-    type:Number,
+    type:String,
     required:true
   },
   images: [String],
@@ -33,11 +33,10 @@ function validateProduct(product) {
   const schema = Joi.object({
     title: Joi.string().required(),
     description : Joi.string().required(),
-    price: Joi.number().required(),
+    price: Joi.string().required(),
     images: Joi.array().items(Joi.string()),
     properties: Joi.array(),
     idUser:Joi.string(),
-
   });
   return schema.validate(product);
 }
@@ -45,7 +44,7 @@ function validateUpdate(product) {
   const schema = Joi.object({
     title: Joi.string().required(),
     description : Joi.string().required(),
-    price: Joi.number().required(),
+    price: Joi.string().required(),
     images: Joi.array().items(Joi.string()),
     properties: Joi.array(),
 
