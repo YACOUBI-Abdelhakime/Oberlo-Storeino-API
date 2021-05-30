@@ -3,6 +3,7 @@ const connectDB = require('./Connection/BD');
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors')
 
 
 
@@ -12,6 +13,11 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }))
 // parse application/json
 app.use(bodyParser.json())
+const corsOptions = {
+    exposedHeaders: 'x-token',
+  };
+app.use(cors(corsOptions))
+
 const PORT = 8085;
 
  

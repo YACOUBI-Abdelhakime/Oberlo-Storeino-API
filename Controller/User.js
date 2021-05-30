@@ -6,6 +6,7 @@ const nodemailer = require('nodemailer');
 const auth = require('../midleware/auth');
 const fs = require('fs');
 const {User,validateUser,validateEmail,validateUpdate} = require('../Model/User');
+const { isEqual } = require('lodash');
 const route = express.Router();
 
 /**
@@ -13,9 +14,7 @@ const route = express.Router();
  * <post:/user/add>
  * <post:/user/update>
  */
- route.get('/test',async(req,res)=>{
-    res.send({"user": "abdelhakime","tel":"0628942060"});
-});
+
 route.post('/',async(req,res)=>{
     const {password,email} = req.body;
 
@@ -65,18 +64,37 @@ route.post('/add', async (req, res) => {
     res.header("x-token",token).json({"res":"ok","user": _.pick(obj,["_id","fullName","email"])});
 });
 route.post('/update',auth, async (req, res) => {
-    const {user}  = req.body;
+    const {changePass,oldPass,user}  = req.body;
     const {error} = validateUpdate(user);
     if(error) return res.json({"res":"error","message":error.details[0].message});
-
-    if(user.password){
+    
+    if(changePass){
+        let obj = await User.findOne({'_id':req.userId});
         const salt = bcrypt.genSaltSync(10);
         user.password = bcrypt.hashSync(user.password, salt);
-    }
+        let isEqual
+            
+        isEqual = bcrypt.compareSync(oldPass, obj.password);
+        console.log("Pass ok "+isEqual)
 
-    let obj = await User.findByIdAndUpdate(req.userId,user,{"new":true});
-    obj = new User(_.pick(obj,["_id","fullName","email"]));
-    res.json({"res":"ok","user":obj});
+        if(isEqual){
+            await User.updateOne({_id:req.userId},user)
+            obj = await User.findOne({'_id':req.userId});
+            
+        }else{
+            return res.json({"res":"error","message":"Old password is not correct."});
+        }
+
+        obj = new User(_.pick(obj,["_id","fullName","email"]));
+        res.json({"res":"ok","user":obj});
+    }else{
+        await User.updateOne({_id:req.userId},user)
+        let obj = await User.findOne({'_id':req.userId});
+
+        obj = new User(_.pick(obj,["_id","fullName","email"]));
+        console.log("OBJ--id : "+obj._id+" name : "+obj.fullName+" email : "+obj.email )
+        res.json({"res":"ok","user":obj});
+    }
 });
 
 async function sendEmail(email,code){

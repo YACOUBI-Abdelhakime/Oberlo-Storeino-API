@@ -40,7 +40,7 @@ function validateEmail(login) {
 function validateUpdate(up) {
   const schema = Joi.object({
     fullName: Joi.string().min(3).required(),
-    password : Joi.string().min(3).required(),
+    password : Joi.string().min(3),
   });
   return schema.validate(up);
 } 

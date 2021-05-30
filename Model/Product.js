@@ -11,9 +11,15 @@ const produit = new mongoose.Schema({
     type:String,
     required:true
   },
-  price : {
+  buyingPrice : {
     type:String,
     required:true
+  },
+  comparePrice : {
+    type:String,
+  },
+  salePrice : {
+    type:String,
   },
   images: [String],
   properties: [{
@@ -33,7 +39,9 @@ function validateProduct(product) {
   const schema = Joi.object({
     title: Joi.string().required(),
     description : Joi.string().required(),
-    price: Joi.string().required(),
+    buyingPrice: Joi.string().required(),
+    comparePrice: Joi.string(),
+    salePrice: Joi.string(),
     images: Joi.array().items(Joi.string()),
     properties: Joi.array(),
     idUser:Joi.string(),
@@ -44,9 +52,12 @@ function validateUpdate(product) {
   const schema = Joi.object({
     title: Joi.string().required(),
     description : Joi.string().required(),
-    price: Joi.string().required(),
+    buyingPrice: Joi.string().required(),
+    comparePrice: Joi.string(),
+    salePrice: Joi.string(),
     images: Joi.array().items(Joi.string()),
     properties: Joi.array(),
+    idUser:Joi.string(),
 
   });
   return schema.validate(product);
