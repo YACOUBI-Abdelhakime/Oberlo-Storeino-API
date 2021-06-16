@@ -14,6 +14,9 @@ const route = express.Router();
  * <post:/user/add>
  * <post:/user/update>
  */
+route.get('/tokenStoreino',async(req,res)=>{
+    res.json({"storeinoToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7Il9pZCI6IjYwYWQwY2I4YTg3ZTJjMTZiNDg4MmZiMSIsImZpcnN0bmFtZSI6ImFiZGVsaGFraW1lIiwibGFzdG5hbWUiOiJ5YWNvdWJpIiwicG9zaXRpb24iOiJDTElFTlQiLCJlbWFpbCI6Imhha2ltLjE5OTkxMUBnbWFpbC5jb20iLCJhZGRyZXNzIjpudWxsfSwiY29tcGFueSI6eyJfaWQiOiI2MGFkMGNiOGE4N2UyYzE2YjQ4ODJmYWYiLCJuYW1lIjoib2JlcmxvIiwic3RhdHVzIjoiVU5DT01QTEVURUQifSwic3RvcmUiOnsiX2lkIjoiNjBhZDBjY2FhODdlMmMxNmI0ODgyZmI4IiwibmFtZSI6Ik9iZXJsbyIsInN1YmRvbWFpbiI6Im9iZXJsby5zdG9yZWluby5jb20ifSwiaWF0IjoxNjIzNzEwNjI2LCJleHAiOjE2NTUyNDY2MjZ9.hn9-Qn6GGlZChDnqws-g1nitmfkENTK2240dco8Mhpo"});
+});
 
 route.post('/',async(req,res)=>{
     const {password,email} = req.body;
